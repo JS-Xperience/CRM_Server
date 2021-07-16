@@ -18,6 +18,7 @@ const main = async () => {
 
   const server = new ApolloServer({
     schema: await buildSchema({ resolvers: [CustomerResolver] }),
+    introspection: true,
   });
 
   server.applyMiddleware({
