@@ -16,8 +16,9 @@ const typeorm_1 = require("typeorm");
 const dotenv_safe_1 = __importDefault(require("dotenv-safe"));
 const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
-const customer_resolver_1 = __importDefault(require("./resolvers/customer_resolver"));
 const type_graphql_1 = require("type-graphql");
+const cors_1 = __importDefault(require("cors"));
+const customer_resolver_1 = __importDefault(require("./resolvers/customer_resolver"));
 dotenv_safe_1.default.config();
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     yield typeorm_1.createConnection({
@@ -26,8 +27,14 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         entities: [],
     });
     const app = express_1.default();
+    app.use(cors_1.default({
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
+    }));
     const server = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({ resolvers: [customer_resolver_1.default] }),
+        introspection: true,
+        playground: true,
     });
     server.applyMiddleware({
         app,
