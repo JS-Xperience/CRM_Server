@@ -2,8 +2,9 @@ import { createConnection } from "typeorm";
 import dotenv from "dotenv-safe";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import CustomerResolver from "./resolvers/customer_resolver";
 import { buildSchema } from "type-graphql";
+import cors from "cors";
+import CustomerResolver from "./resolvers/customer_resolver";
 
 dotenv.config();
 
@@ -16,6 +17,12 @@ const main = async () => {
 
   const app = express();
 
+  app.use(
+    cors({
+      origin: process.env.CORS_ORIGIN,
+      credentials: true,
+    })
+  );
   const server = new ApolloServer({
     schema: await buildSchema({ resolvers: [CustomerResolver] }),
     introspection: true,
@@ -24,6 +31,7 @@ const main = async () => {
 
   server.applyMiddleware({
     app,
+    cors: false,
   });
 
   const port = process.env.PORT as string;
